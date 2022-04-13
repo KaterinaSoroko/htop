@@ -1,9 +1,8 @@
 import psutil
+from info.data import Data
 
 
-class Memory:
-    info = {}
-    template = ""
+class Memory(Data):
 
     def get(self):
         self.info.update(virtual=(psutil.virtual_memory().used, psutil.virtual_memory().total))
@@ -14,7 +13,6 @@ class Memory:
         self.info['swap'] = list(map(lambda x: round((x / (1024 ** 3)), 2), self.info['swap']))
 
     def prepare_template(self):
-        self.prepare_data()
         load_virtual = int((self.info["virtual"][0]/self.info["virtual"][1]) * 20)
         virtual_str = "{:>5} [{:<20}]".format("Mem", "*" * load_virtual)
         self.template += virtual_str + "{virtual[0]}/{virtual[1]}G\n"
@@ -22,7 +20,3 @@ class Memory:
         swp_str = "{:>5} [{:<20}]".format("Swp", "*" * load_swp)
         self.template += swp_str + "{swap[0]}/{swap[1]}G\n"
         return self.template
-
-    def show(self):
-        self.prepare_template()
-        print(self.template.format(**self.info))
